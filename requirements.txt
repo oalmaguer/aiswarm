@@ -1,6 +1,8 @@
+git+https://github.com/openai/swarm.git
 duckduckgo-search
 openai
 toml
 gradio
 streamlit
 swarm
+
