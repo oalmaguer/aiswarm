@@ -20,6 +20,7 @@ model_name = st.secrets["general"]["OPENAI_MODEL_NAME"]
 
 current_date = datetime.now().strftime("%Y-%m")
 
+
 openai_client = OpenAI(
     api_key = api_key,
 )
@@ -27,13 +28,27 @@ openai_client = OpenAI(
 client = Swarm(client=openai_client)
 
 #1, create internet search 
+#openai implementation
+# def get_news_articles(topic):
+#     prompt = f"fetch the 7 latest news articles on {topic} as of {current_date}."
+#     response = openai_client.chat.completions.create(
+#         model='gpt-4o',
+#         messages=[{"role": "user", "content": prompt}],
+#         max_tokens=500,
+#         n=1,
+#         stop=None,
+#         temperature=0.7,
+#     )
+#     print(f"response: {response}")
+#     return response.choices[0].message.content
 
+#duckduck go implementation
 def get_news_articles(topic):
     print(f"Searching for {topic}")
     
     #DUCKDUCKGO SEARCH
     ddg_api = DDGS()
-    results = ddg_api.text(f"{topic} after:{current_date}", max_results=7)
+    results = ddg_api.text(f"{topic} after:{current_date}", max_results=5)
     if results:
         news_articles = "\n\n".join([f"Title: {result['title']}\nLink: {result['href']}\nSnippet: {result['body']}" for result in results])
         print(f"Found {len(results)} results")
@@ -49,33 +64,34 @@ news_agent = Agent(
     name="News Assistant",
     instructions="You provide the latest news articles for a given topic using DuckDuckGo search.",
     functions=[get_news_articles],
-    model=model_name
+    model='gpt-4o'
 )
 
 # Editor Agent to edit news
 editor_agent = Agent(
     name="Editor Assistant",
     instructions="Rewrite and give me as news article ready for publishing in VALID JSON format. Each News story in separate section. The array will be called `news_articles`. `title`, `link`, `snippet`.",
-    model=model_name
+    model='gpt-4o'
 )
 
 #create workflow
 
 def run_news_workflow(topic):
     print('Running news workflow')
-
-    #fetch news
-    news_response = client.run(
+    with st.spinner(f"The robots are fetching the latest news on {topic}..."):
+        #fetch news
+        news_response = client.run(
         news_agent,
-        [{"role": "user", "content": f"Search the internet for news articles on {topic} after {current_date}"}],
-    )
+            [{"role": "user", "content": f"Search the internet for news articles on {topic} after {current_date}"}],
+        )
 
-    raw_news = news_response.messages[-1]["content"]
+        raw_news = news_response.messages[-1]["content"]
 
 
     #transfer to editor
-    editor_response = client.run(
-        agent=editor_agent,
+    with st.spinner("The robots are editing the news..."):
+        editor_response = client.run(
+            agent=editor_agent,
         messages=[{"role": "user", "content": raw_news}],
     )
 
@@ -85,6 +101,7 @@ def run_news_workflow(topic):
     if json_data.startswith('json'):
         json_data = json_data[4:]  # Remove the first 4 characters 'json'
         parsed_json = json.loads(json_data)
+        print(f"parsed_json: {parsed_json}")
         return parsed_json["news_articles"]
 
 def start_agents(topic):
@@ -98,8 +115,7 @@ def main():
     
     if st.button("Fetch News"):
         if topic:
-            with st.spinner("Fetching news..."):
-                news_articles = run_news_workflow(topic)
+            news_articles = run_news_workflow(topic)
             if isinstance(news_articles, list):
                 st.subheader("News Articles:")
                 for article in news_articles:
@@ -107,7 +123,7 @@ def main():
                     st.markdown(f"[Read more]({article['link']})")
                     st.markdown(f"*Snippet:* {article['snippet']}")
                     st.markdown("---")
-                st.success("Done!")
+                
             else:
                 st.error(news_articles)  # Display error message if no results found
         else:
