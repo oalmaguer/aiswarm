@@ -24,7 +24,7 @@ openai_client = OpenAI(
     api_key = api_key,
 )
 # initialize swarm
-client = Swarm(openai_client)
+client = Swarm(client=openai_client)
 
 #1, create internet search 
 
