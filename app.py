@@ -17,15 +17,12 @@ import toml
 # model_name = os.getenv("OPENAI_MODEL_NAME")
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 model_name = st.secrets["general"]["OPENAI_MODEL_NAME"]
-print(f"api_key: {api_key}")
-print(f"model_name: {model_name}")
+
 current_date = datetime.now().strftime("%Y-%m")
 
-openai_client = OpenAI(
-    api_key = api_key,
-)
+
 # initialize swarm
-client = Swarm(openai_client)
+client = Swarm()
 
 #1, create internet search 
 
