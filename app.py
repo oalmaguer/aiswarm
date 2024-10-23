@@ -20,9 +20,11 @@ model_name = st.secrets["general"]["OPENAI_MODEL_NAME"]
 
 current_date = datetime.now().strftime("%Y-%m")
 
-
+openai_client = OpenAI(
+    api_key = api_key,
+)
 # initialize swarm
-client = Swarm()
+client = Swarm(openai_client)
 
 #1, create internet search 
 
