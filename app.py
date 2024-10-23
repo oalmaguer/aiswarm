@@ -17,9 +17,11 @@ import toml
 # model_name = os.getenv("OPENAI_MODEL_NAME")
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 model_name = st.secrets["general"]["OPENAI_MODEL_NAME"]
+print(f"api_key: {api_key}")
+print(f"model_name: {model_name}")
 current_date = datetime.now().strftime("%Y-%m")
 
-client = OpenAI(
+openai_client = OpenAI(
     api_key = api_key,
 )
 # initialize swarm
@@ -61,8 +63,6 @@ editor_agent = Agent(
     instructions="Rewrite and give me as news article ready for publishing in VALID JSON format. Each News story in separate section. The array will be called `news_articles`. `title`, `link`, `snippet`.",
     model=model_name
 )
-
-
 
 #create workflow
 
