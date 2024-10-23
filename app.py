@@ -8,16 +8,19 @@ from openai import OpenAI
 import gradio as gr
 import streamlit as st
 from dotenv import load_dotenv
-
+import toml
+# Load the configuration from the TOML file
+config = toml.load("config.toml")
 # Load environment variables from .env file
 load_dotenv()
 # Set your API key here
 # Get API key and model name from environment variables
-api_key = os.getenv("OPENAI_API_KEY")
-model_name = os.getenv("OPENAI_MODEL_NAME")
+# api_key = os.getenv("OPENAI_API_KEY")
+# model_name = os.getenv("OPENAI_MODEL_NAME")
+api_key = config["settings"]["OPENAI_API_KEY"]
+model_name = config["settings"]["OPENAI_MODEL_NAME"]
 current_date = datetime.now().strftime("%Y-%m")
 
-print(os.environ.get("OPENAI_API_KEY"))
 client = OpenAI(
     api_key = api_key,
 )
@@ -74,13 +77,8 @@ def run_news_workflow(topic):
         [{"role": "user", "content": f"Search the internet for news articles on {topic} after {current_date}"}],
     )
 
-    print(news_response)
     raw_news = news_response.messages[-1]["content"]
 
-    print(f"raw_news: {raw_news}")
-
-    #parse json from raw_news to a list of news articles
-    print(f"news_articles: {raw_news}")
 
     #transfer to editor
     editor_response = client.run(
@@ -88,16 +86,12 @@ def run_news_workflow(topic):
         messages=[{"role": "user", "content": raw_news}],
     )
 
-    print(f"editor_response: {editor_response}")
     json_data = editor_response.messages[-1]["content"]
     json_data = json_data.strip('` \n')
 
     if json_data.startswith('json'):
         json_data = json_data[4:]  # Remove the first 4 characters 'json'
-        print(f"json_data: {json_data}")
-        print(type(json_data))
         parsed_json = json.loads(json_data)
-        print(f"parsed_json: {parsed_json}")
         return parsed_json["news_articles"]
 
 def start_agents(topic):
