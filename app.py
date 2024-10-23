@@ -10,14 +10,13 @@ import streamlit as st
 import toml
 
 # Load the configuration from the TOML file
-config = toml.load("config.toml")
 # Load environment variables from .env file
 # Set your API key here
 # Get API key and model name from environment variables
 # api_key = os.getenv("OPENAI_API_KEY")
 # model_name = os.getenv("OPENAI_MODEL_NAME")
-api_key = config["settings"]["OPENAI_API_KEY"]
-model_name = config["settings"]["OPENAI_MODEL_NAME"]
+api_key = st.secrets["OPENAI_API_KEY"]
+model_name = st.secrets["OPENAI_MODEL_NAME"]
 current_date = datetime.now().strftime("%Y-%m")
 
 client = OpenAI(
