@@ -1,0 +1,8 @@
+duckduckgo_search
+openai
+toml
+dotenv
+gradio
+streamlit
+dotenv
+        
