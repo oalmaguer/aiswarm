@@ -1,8 +1,8 @@
-duckduckgo_search
+duckduckgo-search
 openai
 toml
 dotenv
 gradio
 streamlit
 dotenv
-        
+swarm
