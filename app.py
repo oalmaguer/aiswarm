@@ -8,6 +8,7 @@ from openai import OpenAI
 import gradio as gr
 import streamlit as st
 import toml
+
 # Load the configuration from the TOML file
 config = toml.load("config.toml")
 # Load environment variables from .env file
