@@ -25,7 +25,7 @@ openai_client = OpenAI(
     api_key = api_key,
 )
 # initialize swarm
-client = Swarm()
+client = Swarm(openai_client)
 
 #1, create internet search 
 
@@ -45,10 +45,6 @@ def get_news_articles(topic):
     
     
 #create ai agents
-# def transfer_to_editor(news_articles):
-#     print('Transferring to editor')
-#     return editor_agent.run({"role": "system", "content": news_articles})
-
 # News Agent to fetch news
 news_agent = Agent(
     name="News Assistant",
